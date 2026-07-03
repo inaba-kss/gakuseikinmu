@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_HOME" value="C:/logs_batch" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/batch.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- hourly rollover -->
+            <fileNamePattern>${LOG_HOME}/batch.%d{yyyy-MM-dd_HH}_%i.log</fileNamePattern>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days' worth of history -->
+        </rollingPolicy>
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MAIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/batch_mail.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_HOME}/batch_mail.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+        </rollingPolicy>
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+        <!-- <discardingThreshold>0</discardingThreshold> -->
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <logger name="com.brainsellers" level="WARN" />
+
+    <logger name="org.apache.myfaces.shared_tomahawk" level="WARN" />
+
+    <logger name="org.seasar" level="ERROR" />
+    <logger name="org.seasar.extension.tx" level="DEBUG" />
+    <logger name="org.seasar.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.extension.jdbc.impl" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.extension.jta" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.framework.aop.interceptors" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.framework.container.factory" level="DEBUG" />
+    <logger name="org.seasar.framework.container.servlet" level="DEBUG" />
+    <logger name="org.seasar.framework.env" level="DEBUG" />
+    <logger name="org.seasar.teeda" level="DEBUG" />
+
+    <logger name="jp.co.kssinet" level="INFO" />
+    <logger name="jp.co.kssinet.dusk3070.common" level="WARN" />
+    <logger name="jp.co.kssinet.dusk3070.common.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="jp.co.kssinet.framework" level="INFO" />
+    <logger name="jp.co.kssinet.dusk3070.common.buhin.MailLogicImpl" level="INFO" additivity="false">
+        <appender-ref ref="MAIL" />
+    </logger>
+    <logger name="jp.co.kssinet.dusk3070.gamen.common" level="WARN" />
+    <logger name="jp.co.kssinet.dusk3070.batch" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+</configuration>

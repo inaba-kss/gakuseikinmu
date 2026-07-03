@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_HOME" value="C:/logs_tomcat" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression><![CDATA[return !message.contains("Error") && !message.contains("Exception")
+                                        && ((message.contains("INSERT") && message.contains(" INTO "))
+                                         || (message.contains("UPDATE") && message.contains(" SET "))
+                                         || (message.contains("DELETE") && message.contains(" FROM "))
+                                         || (message.contains("SELECT")
+                                            && (message.contains("Master.")
+                                             || message.contains("Kihon.")
+                                             || message.contains("Work.")))
+                                         || message.contains("Dao#insert(")
+                                         || message.contains("Dao#update(")
+                                         || message.contains("Dao#delete("));]]></expression>
+            </evaluator>
+            <OnMismatch>ACCEPT</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--
+        <file>${LOG_HOME}/gakuseikinmu.log</file>
+        <append>true</append>
+-->
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- hourly rollover -->
+            <fileNamePattern>${LOG_HOME}/gakuseikinmu.%d{yyyy-MM-dd_HH}_%i.log</fileNamePattern>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days' worth of history -->
+<!--
+            <maxHistory>30</maxHistory>
+-->
+        </rollingPolicy>
+<!--
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression><![CDATA[return !message.contains("Error") && !message.contains("Exception")
+                                        && ((message.contains("INSERT") && message.contains(" INTO "))
+                                         || (message.contains("UPDATE") && message.contains(" SET "))
+                                         || (message.contains("DELETE") && message.contains(" FROM "))
+                                         || (message.contains("SELECT")
+                                            && (message.contains("Master.")
+                                             || message.contains("Kihon.")
+                                             || message.contains("Work.")))
+                                         || message.contains("Dao#insert(")
+                                         || message.contains("Dao#update(")
+                                         || message.contains("Dao#delete("));]]></expression>
+            </evaluator>
+            <OnMismatch>ACCEPT</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+-->
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MAIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--
+        <file>${LOG_HOME}/gakuseikinmu_mail.log</file>
+        <append>true</append>
+-->
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_HOME}/gakuseikinmu_mail.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+<!--
+            <maxHistory>30</maxHistory>
+-->
+        </rollingPolicy>
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SLOW_QUERY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--
+        <file>${LOG_HOME}/gakuseikinmu_slowquery.log</file>
+        <append>true</append>
+-->
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_HOME}/gakuseikinmu_slowquery.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+<!--
+            <maxHistory>30</maxHistory>
+-->
+        </rollingPolicy>
+        <encoder>
+            <pattern><![CDATA[%date{yyyy/MM/dd HH:mm:ss:SSS} [%thread] %-5level - %logger{0} %msg%n]]></pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+        <!-- <discardingThreshold>0</discardingThreshold> -->
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <logger name="com.brainsellers" level="WARN" />
+
+    <logger name="org.apache.myfaces.shared_tomahawk" level="WARN" />
+
+    <logger name="org.seasar" level="ERROR" />
+    <logger name="org.seasar.extension.tx" level="DEBUG" />
+    <logger name="org.seasar.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.extension.jdbc.impl" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.extension.jta" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.framework.aop.interceptors" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.seasar.framework.container.factory" level="DEBUG" />
+    <logger name="org.seasar.framework.container.servlet" level="DEBUG" />
+    <logger name="org.seasar.framework.env" level="DEBUG" />
+    <logger name="org.seasar.teeda" level="DEBUG" />
+
+    <logger name="jp.co.kssinet" level="INFO" />
+    <logger name="jp.co.kssinet.dusk3010.common" level="WARN" />
+    <logger name="jp.co.kssinet.dusk3010.common.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="jp.co.kssinet.framework" level="INFO" />
+    <logger name="jp.co.kssinet.dusk3010.common.aop.TraceSlowQueryInterceptor" level="DEBUG" additivity="false">
+        <appender-ref ref="SLOW_QUERY" />
+    </logger>
+    <logger name="jp.co.kssinet.dusk3010.common.buhin.MailLogicImpl" level="INFO" additivity="false">
+        <appender-ref ref="MAIL" />
+    </logger>
+    <logger name="jp.co.kssinet.dusk3010.gamen.common" level="WARN" />
+    <logger name="jp.co.kssinet.dusk3070.batch" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC" />
+    </logger>
+</configuration>
